@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Dat moji</title>
+	<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+	<div id="hud">
+		<span id="user_stuff">
+			<img id="profile" src="img/nicholas.jpg">
+			<br>
+			<span id="username">dingding231</span>
+		</span>
+		<span id="stats">
+			Rank: <span id="rank">99999</span>
+			<br>
+			Wins: <span id="wins">99999</span>
+			<br>
+			Losses: <span id="losses">99999</span>
+		</span>
+	</div>
+
+	<div id="leaderboard">
+		<h1>Leaderboard</h1>
+		<ol>
+			<li></li>
+		</ol>
+	</div>
+
+	<div class="clearfix"></div>
+
+	<div id="user_interaction">
+		<!-- fill in action attribute -->
+		<form id="oui" action="/addison-fill-this-in/" method="post">	
+			<label for="known">Enter an emoji for your opponent to guess: </label>
+			<input id="known" type="text" name="known" maxlength="1" value="💩">
+			<br class="clearfix">
+			<label for="guess">Guess your opponent's emoji: </label>
+			<input id="guess" type="text" name="guess" maxlength="1" value="💩">
+			<br class="clearfix">
+			<input class="sub" type="submit" value="Cast thy emojis">
+		</form>
+	</div>
+
+</body>
+</html>
