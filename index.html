@@ -16,12 +16,15 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
-let canvas = document.getElementById('canvas');
-canvas.width = 800;
-canvas.height = 600;
-let ctx = canvas.getContext('2d');
 
-let keys_down = {};
+let wins_display = document.getElementById("wins");
+let losses_display = document.getElementById("losses");
+let yay_or_nay_display = document.getElementById("yay-or-nay");
+let opponent_status_display = document.getElementById("opponent-status");
+let form = document.getElementById("oui");
+
+let wins = 0;
+let losses = 0;
 
 let me;
 let socket = io();
@@ -29,75 +32,27 @@ socket.on('init', (data) => {
 	me = data;
 });
 
-socket.on('update_players', (data) => {
-	ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-	for (let key in data) {
-		if (data.hasOwnProperty(key) /* && key != me.userId */) {
-			draw_player(ctx, data[key]);
-		}
+socket.on('guess_status', ({correct, op_correct, op_guess}) => {
+	let rest = (op_correct ? "" : "in") + "correctly guessed " + op_guess + ".";
+	let msg;
+	if (correct) {
+		msg = "Correct!";
+		wins += 1;
+		wins_display.textContent = wins.toString();
+	} else {
+		msg = "Booooo, get out of here.";
+		losses += 1;
+		losses_display.textContent = losses.toString();
 	}
+
+	yay_or_nay_display.textContent(msg);
+	opponent_status_display.textContent("Opponent done! Your opponent " + rest);
 });
 
-document.addEventListener("keydown", (e) => {
-	switch (e.keyCode) {
-		case 39:
-			keys_down.right = true;
-			break;
-		case 37:
-			keys_down.left = true;
-			break;
-		case 38:
-			keys_down.up = true;
-			break;
-		case 40:
-			keys_down.down = true;
-			break;
-		default:
-			return;
-	}
+form.addEventListener('submit', (e) => {
 	e.preventDefault();
 });
 
-document.addEventListener("keyup", (e) => {
-	switch (e.keyCode) {
-		case 39:
-			keys_down.right = false;
-			break;
-		case 37:
-			keys_down.left = false;
-			break;
-		case 38:
-			keys_down.up = false;
-			break;
-		case 40:
-			keys_down.down = false;
-			break;
-		default:
-			return;
-	}
-	e.preventDefault();
-});
-
-window.setInterval(() => {
-	let keys = [];
-
-	// move this somewhere else, make it an object with keycodes as values
-	let possible_keys = ["right", "left", "up", "down"];
-	for (let i = 0; i < possible_keys.length; i++) {
-		if (keys_down[possible_keys[i]]) {
-			keys.push(possible_keys[i]);
-		}
-	}
-	if (keys.length != 0) {
-		socket.emit('key_press', keys);
-	}
-}, 20);
-
-function draw_player(ctx, player) {
-	ctx.beginPath();
-	ctx.arc(player.pos.x, player.pos.y, player.radius, 0, 2 * Math.PI);
-	ctx.fill();
-}
 </script>	
 </body>
 </html>

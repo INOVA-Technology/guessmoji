@@ -8,19 +8,35 @@ let player_list = {};
 app.use("/public", express.static(__dirname + "/public"));
 
 app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
-
+	res.sendFile(__dirname + '/index.html');
 });
+
+function checkIfDone(player) {
+	let other = player.playing_with;
+	if (other && other.emoji) {
+		let correct = guess === other.emoji;
+		if (correct) {
+			player.wins += 1;
+		} else {
+			player.losses += 1;
+		}
+		sock.emit('turn_done', {
+			'correct': correct,
+			'op_correct': correct,
+			'op_guess': guess
+		});
+	}
+}
 
 io.on('connection', (sock) => {
 	let player = {
 		playerId: sock.id,
-		pos: {
-			x: 0,
-			y: 0
-		},
-		radius: 15,
-		speed: 6
+		host: false,
+		wins: 0,
+		losses: 0
+		emoji: null,
+		guess: null,
+		playing_with: null,
 	};
 	player_list[player.playerId] = player;
 	sock.emit('init', player);
@@ -28,47 +44,55 @@ io.on('connection', (sock) => {
 		delete player_list[player.playerId];
 	});
 
-	sock.on('key_press', (data) => {
-		const last_pos = { x: player.pos.x, y: player.pos.y };
-		for (let i = 0; i < data.length; i++) {
-			switch (data[i]) {
-				case "right":
-					player.pos.x += player.speed;
-					break;
-				case "left":
-					player.pos.x -= player.speed;
-					break;
-				case "up":
-					player.pos.y -= player.speed;
-					break;
-				case "down":
-					player.pos.y += player.speed;
-					break;
-				// default:
-					// TODO: handle invalid keys
-					// break;
-			}
-		}
-		// TODO: only check players in the current scene
-		for (let i in player_list) {
-			if (player_list[i] == player) { continue }
-			if (check_for_collision(player, player_list[i])) {
-				const diff = { x: player.pos.x - last_pos.x, y: player.pos.y - last_pos.y };
-				console.log(`diff.x, diff.y = ${diff.x}, ${diff.y}`);
-
-				const diff_length = Math.sqrt(diff.x * diff.x + diff.y * diff.y);
-				console.log(`diff_length = ${diff_length}`);
-				const dist_to_p = player.radius + player_list[i].radius;
-				console.log(`dist_to_p = ${dist_to_p}`);
-				const new_displacement = { x: diff.x / diff_length * dist_to_p, y: diff.y / diff_length * dist_to_p }
-				player.pos = { x: last_pos.x + new_displacement.x, y: last_pos.y + new_displacement.y };
-			}
-		}
+	sock.on('submit_guess', (guess) => {
+		player.guess = guess;
 	});
 
+	sock.on('submit_emoji', (emoji) => {
+		player.emoji = emoji;
+	});
+
+	// sock.on('key_press', (data) => {
+		// const last_pos = { x: player.pos.x, y: player.pos.y };
+		// for (let i = 0; i < data.length; i++) {
+			// switch (data[i]) {
+				// case "right":
+					// player.pos.x += player.speed;
+					// break;
+				// case "left":
+					// player.pos.x -= player.speed;
+					// break;
+				// case "up":
+					// player.pos.y -= player.speed;
+					// break;
+				// case "down":
+					// player.pos.y += player.speed;
+					// break;
+				// // default:
+					// // TODO: handle invalid keys
+					// // break;
+			// }
+		// }
+		// // TODO: only check players in the current scene
+		// for (let i in player_list) {
+			// if (player_list[i] == player) { continue }
+			// if (check_for_collision(player, player_list[i])) {
+				// const diff = { x: player.pos.x - last_pos.x, y: player.pos.y - last_pos.y };
+				// console.log(`diff.x, diff.y = ${diff.x}, ${diff.y}`);
+
+				// const diff_length = Math.sqrt(diff.x * diff.x + diff.y * diff.y);
+				// console.log(`diff_length = ${diff_length}`);
+				// const dist_to_p = player.radius + player_list[i].radius;
+				// console.log(`dist_to_p = ${dist_to_p}`);
+				// const new_displacement = { x: diff.x / diff_length * dist_to_p, y: diff.y / diff_length * dist_to_p }
+				// player.pos = { x: last_pos.x + new_displacement.x, y: last_pos.y + new_displacement.y };
+			// }
+		// }
+	// });
+
 	setInterval(() => {
-		sock.emit('update_players', player_list);
-	}, 20);
+		check_if_done();
+	}, 500);
 });
 
 http.listen(3000, function(){
