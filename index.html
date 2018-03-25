@@ -2,16 +2,55 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title></title>
-	<style>
-		#canvas {
-			border: 1px solid black;
-		}
-	</style>
+	<title>Dat moji</title>
+	<link rel="stylesheet" href="css/main.css">
 </head>
 <body>
 
-<canvas id="canvas"></canvas>
+<div id="hud">
+		<span class="user_stuff">
+			<img class="profile" src="img/nicholas.jpg">
+			<br>
+			<span id="username">dingding231</span>
+		</span>
+		<span class="stats">
+			Rank: <span id="rank">99999</span>
+			<br>
+			Wins: <span id="wins">99999</span>
+			<br>
+			Losses: <span id="losses">99999</span>
+		</span>
+	</div>
+
+	<div class="leaderboard">
+		<h1>Leaderboard</h1>
+		<ol>
+			<li></li>
+		</ol>
+	</div>
+
+	<div class="clearfix"></div>
+
+	<div class="user_interaction">
+		<!-- fill in action attribute -->
+		<form id="oui" action="/addison-fill-this-in/" method="post">	
+			<label for="known">Enter an emoji for your opponent to guess: </label>
+			<input id="known" class="text-input" type="text" name="known" maxlength="1" value="💩">
+			<br class="clearfix">
+			<label for="guess">Guess your opponent's emoji: </label>
+			<input id="guess" class="text-input" type="text" name="guess" maxlength="1" value="💩">
+			<br class="clearfix">
+			<input class="sub" type="submit" value="Cast thy emojis">
+			<br class="clearfix">
+		</form>
+	</div>
+
+	<div class="who-wins-what">
+		<span id="yay-or-nay">Win Status</span>
+		<br>
+		Your opponent: <span id="opponent-status">beat the crap out of you</span>
+		<br>
+	</div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://code.jquery.com/jquery-1.11.1.js"></script>

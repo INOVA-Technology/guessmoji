@@ -8,34 +8,48 @@
 	border: 2px solid black;
 }
 
-#user_stuff {
+.user_stuff {
 	float: left;
 }
 
-#profile {
+.profile {
 	height: 60px;
 	width: 60px;
 }
 
-#stats {
+.stats {
 	float: right;
 }
 
 /* user interaction section */
-#user_interaction {
+.user_interaction {
 	margin: auto;
 	width: 40%;
 	padding: 10px;
 	border: 2px solid black;
 }
 
-#user_interaction input {
+.user_interaction .text-input {
 	display: inline-block;
 	float: right;
 }
 
+.sub {
+	display: inline-block;
+	text-align: center;
+}
+
+/* wins and what not */
+
+.who-wins-what {
+	margin: 10px auto;
+	padding: 10px;
+	width: 40%;
+	border: 2px solid black;
+}
+
 /* Leaderboard */
-#leaderboard {
+.leaderboard {
 	float: right;
 	width: 200px;
 	padding: 10px;
